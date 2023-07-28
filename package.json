@@ -1,0 +1,23 @@
+{
+  "name": "budgetcookingsolo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OussamaMhSafi/BudgetCookingSolo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OussamaMhSafi/BudgetCookingSolo/issues"
+  },
+  "homepage": "https://github.com/OussamaMhSafi/BudgetCookingSolo#readme",
+  "dependencies": {
+    "@material-ui/core": "^4.12.4"
+  }
+}
