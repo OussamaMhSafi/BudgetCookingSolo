@@ -4,28 +4,20 @@ import RecipeCard from "./RecipeCard";
 function RecipeList(){
 
     const [allMeals, setAllMeals] = useState([]);
-    const [mealsWithMeat, setMealsWithMeat] = useState([]);
-    const [mealsWithChicken, setMealsWithChicken] = useState([]);
-    const [mealsWithFish, setMealsWithFish] = useState([]);
     const [favorites, setFavorites] = useState([]);
-    const [transformedCardId, setTransformedCardId] = useState(null);
+    const [counter, setCounter] = useState(0); 
 
     useEffect(()=> {    
         
         const fetchRecipes = async ()=>{
 
             try {
-                // Find three meals with meat
-                const mealsWithMeat = await fetchMealsByIngredient('beef');
-            
-                // Find three meals with chicken
-                const mealsWithChicken = await fetchMealsByIngredient('chicken');
-            
-                // Find three meals with fish
-                const mealsWithFish = await fetchMealsByIngredient('seafood');
+                const mealsWithMeat = await fetchMealsByIngredient('beef', counter);
+                const mealsWithChicken = await fetchMealsByIngredient('chicken', counter);
+                const mealsWithFish = await fetchMealsByIngredient('seafood', counter);
 
-                //setAllMeals([...mealsWithMeat, ...mealsWithChicken, ...mealsWithFish]);
-                setAllMeals(mealsWithChicken);
+                setAllMeals([...mealsWithMeat, ...mealsWithChicken, ...mealsWithFish]);
+                //setAllMeals(mealsWithChicken);
 
             } catch (error) {
                 console.error('Error fetching meals:', error);
@@ -36,21 +28,15 @@ function RecipeList(){
     }, [])
 
     const handleCardClick = (mealId) => {
-        if (transformedCardId === mealId) {
-          // If the clicked card is already transformed, remove the transformation
-          setTransformedCardId(null);
-        } else {
-          // Otherwise, apply the transformation to the clicked card
-          setTransformedCardId(mealId);
-        }
+
     };
 
-    const fetchMealsByIngredient = async (ingredient) =>{
+    const fetchMealsByIngredient = async (ingredient, start) =>{
         const response = await fetch(
           `https://www.themealdb.com/api/json/v1/1/filter.php?c=${ingredient}`
         );
         const data = await response.json();
-        return data.meals.slice(0, 3);
+        return data.meals.slice(start, start + 3);
     }
 
     function displayMeals(meals, title) {
@@ -59,15 +45,18 @@ function RecipeList(){
     }
 
     const handleRefresh = async () => {
+
+        var c = counter +3;
         try {
-            const nextMeatData = await fetchMealsByIngredient("beef");
-            const nextChickenData = await fetchMealsByIngredient("chicken");
-            const nextFishData = await fetchMealsByIngredient("seafood");
+            const nextMeatData = await fetchMealsByIngredient("beef", c);
+            const nextChickenData = await fetchMealsByIngredient("chicken", c);
+            const nextFishData = await fetchMealsByIngredient("seafood", c);
 
             setAllMeals([...nextMeatData, ...nextChickenData, ...nextFishData]);
         } catch (error) {
             console.error("Error fetching meals:", error);
         }
+        setCounter(counter+3);
     };
 
     const handleLike = (meal, isLiked) => {

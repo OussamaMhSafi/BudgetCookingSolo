@@ -233,11 +233,11 @@ nav {
 }
 
 .recipe-card:hover~.recipe-card {
-  transform: translateX(160px);
+  transform: translateX(200px);
 }
 
 .recipe-card:not(:first-child) {
-  margin-left: -160px;
+  margin-left: -200px;
 }
 
 .recipe-card-content{
