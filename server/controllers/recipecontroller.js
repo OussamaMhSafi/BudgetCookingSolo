@@ -1,6 +1,6 @@
 const Model = require('../models/recipemodel');
 
-const addRecipe = async (req, res) => {
+const addLike = async (req, res) => {
   try {
     const data = new Model({
       title: req.body.title,
@@ -16,7 +16,7 @@ const addRecipe = async (req, res) => {
   }
 };
 
-const getRecipes = async (req, res) => {
+const getLikes = async (req, res) => {
   try {
     const data = await Model.find();
     res.json(data);
@@ -26,6 +26,6 @@ const getRecipes = async (req, res) => {
 };
 
 module.exports = {
-    addRecipe, 
-    getRecipes
+    addLike, 
+    getLikes
 };
