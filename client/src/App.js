@@ -9,20 +9,30 @@ import './App.css';
 
 function App() {
 
+  const [meatRecipes, setMeatRecipes] = useState([]);
+  const [chickenRecipes, setChickenRecipes] = useState([])
+  const [fishRecipes, setFishRecipes] = useState([])
   const [allMeals, setAllMeals] = useState([]);
-  const [counter, setCounter] = useState(0); 
 
   useEffect(()=> {    
         
     const fetchRecipes = async ()=>{
 
         try {
-            const mealsWithMeat = await fetchMealsByIngredient('beef',0, 3);
-            const mealsWithChicken = await fetchMealsByIngredient('chicken',0, 3);
-            const mealsWithFish = await fetchMealsByIngredient('seafood',0, 3);
+            const mealsWithMeat = await fetchMealsByIngredient('beef', 0, 24);
+            const mealsWithChicken = await fetchMealsByIngredient('chicken', 0, 24);
+            const mealsWithFish = await fetchMealsByIngredient('seafood', 0, 24);
 
-            setAllMeals([...mealsWithMeat, ...mealsWithChicken, ...mealsWithFish]);
 
+            setMeatRecipes(mealsWithMeat);
+            setChickenRecipes(mealsWithChicken);
+            setFishRecipes(mealsWithFish);
+
+            const firstThreeMeatRecipes = mealsWithMeat.slice(0, 3);
+            const firstThreeChickenRecipes = mealsWithChicken.slice(0, 3);
+            const firstThreeFishRecipes = mealsWithFish.slice(0, 3);
+
+            setAllMeals([...firstThreeMeatRecipes, ...firstThreeChickenRecipes, ...firstThreeFishRecipes]);
         } catch (error) {
             console.error('Error fetching meals:', error);
         }
@@ -31,37 +41,27 @@ function App() {
     fetchRecipes();
   }, [])
 
-  const fetchMealsByIngredient = async (ingredient, start, count) =>{
+  const fetchMealsByIngredient = async (ingredient, count, inc) =>{
+
     const response = await fetch(
       `https://www.themealdb.com/api/json/v1/1/filter.php?c=${ingredient}`
     );
     const responseData = await response.json();
-  
+    //console.log(responseData.meals.length)
     const individualMeals = [];
-    let fetchedCount = 0;
   
-    for (let i = start; i < start+count; i++) {
-      if (fetchedCount === count) break;
-  
+    for (let i = count; i < inc; i++) {  
       const mealResponse = await fetch(
         `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${responseData.meals[i].idMeal}`
       );
       const data = await mealResponse.json();
       const individualMeal = data.meals[0];
-  
+
       const ingredient12 = individualMeal.strIngredient12;
-      if (!ingredient12 || ingredient12.trim() === "") {
-        console.log(individualMeal);
+      if (ingredient12===null || ingredient12.trim() === "") {
         individualMeals.push(individualMeal);
-        fetchedCount++;
-      }
-    }
-  
-    if (fetchedCount < count && fetchedCount < count) {
-      const remainingMeals = await fetchMealsByIngredient(ingredient, start + count, count - fetchedCount);
-      individualMeals.push(...remainingMeals);
-    }
-  
+      }    }
+
     return individualMeals;
   }
 
@@ -84,20 +84,22 @@ function App() {
         </div>
 
         <ul className="nav-menu">
-          <li><a href="#home">Beef<br></br>🥩</a></li>
-          <li><a href="#reviews">Chicken<br></br>🐔</a></li>
-          <li><a href="#questions">Fish<br></br>🐟</a></li>
-          <li><a href="#">Favorited<br></br>❤️</a></li>
+          <li><a href="beef">Beef<br></br>🥩</a></li>
+          <li><a href="chicken">Chicken<br></br>🐔</a></li>
+          <li><a href="seafood">Fish<br></br>🐟</a></li>
+          <li><a href="favroties">Favorited<br></br>❤️</a></li>
         </ul>
       </div>
     </nav>
 
     <Routes>
-      <Route path="/" element={<RecipeList allMeals={allMeals} setAllMeals={setAllMeals} counter={counter} setCounter={setCounter}/>} />
+      <Route path="/" element={<RecipeList meatRecipes={meatRecipes} chickenRecipes={chickenRecipes} 
+      fishRecipes={fishRecipes} allMeals={allMeals} setAllMeals={setAllMeals}/>} />
       <Route path="/recipe/:id" element={<RecipeDetails />} />
     </Routes>
     </div>
   );
 }
+
 
 export default App;

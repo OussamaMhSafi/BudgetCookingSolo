@@ -38,6 +38,7 @@ const RecipeCard = ({meal, onImgClick, onLike, category, tags})=>{
                             {tag.trim()}
                         </div>
                 ))}
+                {meal.strArea}
             </div>
         </div>
       );

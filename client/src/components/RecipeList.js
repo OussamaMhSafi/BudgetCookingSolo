@@ -7,18 +7,15 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { faRefresh, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 
-function RecipeList({allMeals, setAllMeals, counter, setCounter}){
+function RecipeList({ meatRecipes, chickenRecipes, fishRecipes, allMeals, setAllMeals}){
 
-    const [meatRecipes, setMeatRecipes] = useState([]);
-    const [chickenRecipes, setChickenRecipes] = useState([])
-    const [fishRecipes, setFishRecipes] = useState([])
     const [favorites, setFavorites] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [counter, setCounter] = useState(3); 
 
 
-    useEffect(()=> {    
-        
-        
+    useEffect(()=> {
+
     }, [])
 
     const navigate = useNavigate();
@@ -29,66 +26,33 @@ function RecipeList({allMeals, setAllMeals, counter, setCounter}){
         navigate(`/recipe/${mealId}`, { state: { meal: selectedMeal } });
     };
 
-    const fetchMealsByIngredient = async (ingredient, start, count) =>{
-      const response = await fetch(
-        `https://www.themealdb.com/api/json/v1/1/filter.php?c=${ingredient}`
-      );
-      const responseData = await response.json();
-    
-      const individualMeals = [];
-      let fetchedCount = 0;
-    
-      for (let i = start; i < start+count; i++) {
-        if (fetchedCount === count) break;
-    
-        const mealResponse = await fetch(
-          `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${responseData.meals[i].idMeal}`
-        );
-        const data = await mealResponse.json();
-        const individualMeal = data.meals[0];
-    
-        const ingredient12 = individualMeal.strIngredient12;
-        if (!ingredient12 || ingredient12.trim() === "") {
-          console.log(individualMeal);
-          individualMeals.push(individualMeal);
-          fetchedCount++;
-        }
-      }
-    
-      if (fetchedCount < count && fetchedCount < count) {
-        const remainingMeals = await fetchMealsByIngredient(ingredient, start + count, count - fetchedCount);
-        individualMeals.push(...remainingMeals);
-      }
-    
-      return individualMeals;
-    }
-
     const handleRefresh = async () => {
 
         var c = counter +3;
         console.log(c);
-        setCounter(counter+3);
         setIsLoading(true);
 
-        try {
-            const nextMeatData = await fetchMealsByIngredient("beef", c, 3);
-            const nextChickenData = await fetchMealsByIngredient("chicken", c, 3);
-            const nextFishData = await fetchMealsByIngredient("seafood", c, 3);
+        await delay(2000);
+    
+        const nextThreeMeatRecipes = meatRecipes.slice(counter, c);
+        const nextThreeChickenRecipes = chickenRecipes.slice(counter, c);
+        const nextThreeFishRecipes = fishRecipes.slice(counter, c);
 
-            setAllMeals([...nextMeatData, ...nextChickenData, ...nextFishData]);
-            setIsLoading(false);
-        } catch (error) {
-            console.error("Error fetching meals:", error);
-            setIsLoading(false);
-        }
+        setAllMeals([...nextThreeMeatRecipes, ...nextThreeChickenRecipes, ...nextThreeFishRecipes]);
+
+        setCounter(c);
+        setIsLoading(false);
+
     };
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
     const handleLike = (meal, isLiked) => {
         if (isLiked) {
-          // Add the liked recipe to the favorites list
           setFavorites([...favorites, meal]);
         } else {
-          // Remove the unliked recipe from the favorites list
           setFavorites(favorites.filter((favorite) => favorite.idMeal !== meal.idMeal));
         }
         console.log(favorites);
