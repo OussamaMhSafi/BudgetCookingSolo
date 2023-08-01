@@ -50,14 +50,14 @@ nav {
 
 .nav-logo {
   color: var(--black);
+  padding: 5px;
   font-size: 2rem;
   font-weight: bold;
+  border-radius: 10px;
+  border: 2px solid black;
   text-decoration: none;
 }
 
-.nav-logo span {
-  text-decoration: underline;
-}
 .nav-logo span:nth-child(1) {
   text-decoration-color: var(--red);
 }
@@ -319,15 +319,16 @@ nav {
   background-color: blue;
 }
 
-.recipe-card-container-loading{
-  display: flex;
-  flex-direction: row;
-  margin: 0px 50px 0px 50px;
-  padding: 3rem;
-  overflow:visible;
-  flex-wrap: wrap;
-  padding-left: 100px;
-  visibility: 10%;
+.loading{
+
+    margin: auto;
+    border: 20px solid #EAF0F6;
+    border-radius: 50%;
+    border-top: 20px solid #FFB133;
+    width: 400px;
+    height: 400px;
+    margin-top: 40px;
+    animation: spinner 0.5s linear infinite;
 }
 
 .recipe-card-container{
@@ -347,6 +348,23 @@ nav {
   border-radius: 10%;
   margin: 10px 10px;
   cursor: pointer;
+}
+
+.tags-container {
+  width: 220px;
+  display: flex;
+  border: black;
+  overflow:hidden;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.tag {
+  border: 1px solid black;
+  padding: 3px;
+  margin: 3px;
+  border-radius: 10px;
 }
 
 .detail-content {
@@ -372,6 +390,31 @@ nav {
   height: 400px;
   border-radius: 10%;
   margin: 20px 20px;
+}
+
+.ingredients-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.ingredients-table th,
+.ingredients-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+  font-size: 18px; /* Adjust the font size as needed */
+}
+
+.ingredients-table th {
+  background-color: #f2f2f2;
+}
+
+.ingredients-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.recipe-instructions{
+  text-align: left;
 }
 
 .heart {

@@ -2,8 +2,9 @@
 import React, {useEffect, useState} from "react";
 import RecipeList from './components/RecipeList';
 import RecipeDetails from './components/RecipeDetails';
+import FavoriteList from "./components/Favoritelist";
 import { BrowserRouter } from 'react-router-dom';
-import { Routes, Route, Router } from 'react-router-dom';
+import { Routes, Route, Router, Link } from 'react-router-dom';
 
 import './App.css';
 
@@ -13,10 +14,15 @@ function App() {
   const [chickenRecipes, setChickenRecipes] = useState([])
   const [fishRecipes, setFishRecipes] = useState([])
   const [allMeals, setAllMeals] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(()=> {    
         
     const fetchRecipes = async ()=>{
+
+      setIsLoading(true);
 
         try {
             const mealsWithMeat = await fetchMealsByIngredient('beef', 0, 24);
@@ -32,10 +38,22 @@ function App() {
             const firstThreeChickenRecipes = mealsWithChicken.slice(0, 3);
             const firstThreeFishRecipes = mealsWithFish.slice(0, 3);
 
-            setAllMeals([...firstThreeMeatRecipes, ...firstThreeChickenRecipes, ...firstThreeFishRecipes]);
+            const meals = ([...firstThreeMeatRecipes, ...firstThreeChickenRecipes, ...firstThreeFishRecipes])
+            setAllMeals(meals);
+
+            const response = await fetch("http://localhost:5000/favorites");
+            const data = await response.json();
+    
+            const favoriteIds = data.map((favorite) => favorite.idMeal);
+            const favoriteMeals = meals.filter((meal) => favoriteIds.includes(meal.idMeal));
+            console.log(favoriteMeals);
+            setFavorites(favoriteMeals);
+
         } catch (error) {
             console.error('Error fetching meals:', error);
         }
+
+        setIsLoading(false);
     };
 
     fetchRecipes();
@@ -71,31 +89,24 @@ function App() {
     <nav>
       <div className="container grid-12-col">
         <div className="nav-inner-wrapper">
-          <a className="nav-logo" href="#">
+          <Link to="/" className="nav-logo">            
             <span>Simpleton Recipes Inc.</span>&nbsp;
-          </a>
-          <div className="mobile-hamburger-wrapper">
-            <div className="mobile-hamburger">
-              <div className="bar"></div>
-              <div className="bar"></div>
-              <div className="bar"></div>
-            </div>
-          </div>
+          </Link>
         </div>
 
         <ul className="nav-menu">
-          <li><a href="beef">Beef<br></br>🥩</a></li>
-          <li><a href="chicken">Chicken<br></br>🐔</a></li>
-          <li><a href="seafood">Fish<br></br>🐟</a></li>
-          <li><a href="favroties">Favorited<br></br>❤️</a></li>
+
+          <li><Link to="/favorites">Favorited<br></br>❤️</Link></li>
         </ul>
       </div>
     </nav>
-
+    <div className={`${isLoading ?"loading" : ""}`}>
+    </div>
     <Routes>
       <Route path="/" element={<RecipeList meatRecipes={meatRecipes} chickenRecipes={chickenRecipes} 
-      fishRecipes={fishRecipes} allMeals={allMeals} setAllMeals={setAllMeals}/>} />
-      <Route path="/recipe/:id" element={<RecipeDetails />} />
+      fishRecipes={fishRecipes} allMeals={allMeals} setAllMeals={setAllMeals} favorites={favorites} setFavorites={setFavorites}/>} />
+      <Route path="/recipe/:id" element={<RecipeDetails favorites={favorites} setFavorites={setFavorites}/>}/>
+      <Route path="/favorites" element={<FavoriteList allMeals={allMeals} favorites={favorites} setFavorites={setFavorites} />} />
     </Routes>
     </div>
   );

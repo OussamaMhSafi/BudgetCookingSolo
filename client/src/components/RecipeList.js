@@ -7,9 +7,8 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { faRefresh, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 
-function RecipeList({ meatRecipes, chickenRecipes, fishRecipes, allMeals, setAllMeals}){
+function RecipeList({ meatRecipes, chickenRecipes, fishRecipes, allMeals, setAllMeals, favorites, setFavorites}){
 
-    const [favorites, setFavorites] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [counter, setCounter] = useState(3); 
 
@@ -45,24 +44,57 @@ function RecipeList({ meatRecipes, chickenRecipes, fishRecipes, allMeals, setAll
 
     };
 
+    const handleLike = async (meal, isLiked) => {
+      if (isLiked) {
+        try {
+          const response = await fetch("http://localhost:5000/favorites", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ idMeal: meal.idMeal }),
+          });
+  
+        if (response.ok) {
+          setFavorites([...favorites, meal]);
+        }
+         
+      } catch (error) {
+          console.error("Error:", error);
+        }
+      } else {
+
+        console.log();
+
+        try {
+          const response = await fetch(`http://localhost:5000/favorites/${meal.idMeal}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ idMeal: meal.idMeal }),
+          });
+    
+          if (response.ok) {
+            setFavorites(favorites.filter((favorite) => favorite.idMeal !== meal.idMeal));
+          } else {
+            console.error("Failed to delete favorite:", response.statusText);
+          }      
+        }
+        catch (error) {
+          console.error("Error:", error);
+        }
+        console.log(favorites);
+      }
+    };
+
     function delay(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    const handleLike = (meal, isLiked) => {
-        if (isLiked) {
-          setFavorites([...favorites, meal]);
-        } else {
-          setFavorites(favorites.filter((favorite) => favorite.idMeal !== meal.idMeal));
-        }
-        console.log(favorites);
-    };
-
-
     return (
         <div className="recipe-card-list">
-
-            <div className={`recipe-card-container${isLoading ? "-loading" : ""}`}>
+            <div className={`recipe-card-container`}>
                 {allMeals.map((meal) => (
                 <RecipeCard
                     key={meal.idMeal}
@@ -71,6 +103,7 @@ function RecipeList({ meatRecipes, chickenRecipes, fishRecipes, allMeals, setAll
                     tags={meal.strTags}
                     onImgClick={() => handleCardClick(meal.idMeal)}
                     onLike={handleLike}
+                    liked={favorites.some((favorite) => favorite.idMeal === meal.idMeal)}
                 />
                 ))}
             </div>

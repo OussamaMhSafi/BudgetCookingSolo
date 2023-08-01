@@ -1,12 +1,10 @@
 const express = require('express');
-const Model = require('./models/recipemodel');
+const Model = require('./models/favouritemodel');
 const router = express.Router();
-const controllers = require('./controllers/recipecontroller');
+const controllers = require('./controllers/favoritecontroller');
 
-// POST new recipes
-router.post('/favorites', controllers.addRecipe);
-
-// GET recipes
-router.get('/favorites', controllers.getRecipes);
+router.post('/favorites', controllers.addFav);
+router.get('/favorites', controllers.getFavs);
+router.delete('/favorites/:idMeal', controllers.deleteFav)
 
 module.exports = router;

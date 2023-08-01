@@ -3,16 +3,19 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { faHeart, faHeartBroken} from '@fortawesome/free-solid-svg-icons'
 import {faHeart as faHeartOutline} from '@fortawesome/free-regular-svg-icons'
 
-const RecipeCard = ({meal, onImgClick, onLike, category, tags})=>{
+const RecipeCard = ({meal, onImgClick, category, tags, onLike, liked})=>{
 
-    const [liked, setLiked] = useState(false);
+    const [isLiked, setIsLiked] = useState(liked);
 
-    const handleLikeClick = () => {
-        setLiked(!liked);
+    const handleLikeClick = async () => {
+
+        setIsLiked(!liked);
         onLike(meal, !liked);
     };
 
-    useEffect(()=>{})
+    useEffect(() => {
+        setIsLiked(liked); 
+    }, [liked]);
 
     return (
         <div className="recipe-card" >
@@ -23,7 +26,7 @@ const RecipeCard = ({meal, onImgClick, onLike, category, tags})=>{
                 <img className="recipe-img" src={meal.strMealThumb} alt={meal.strMeal} onClick={onImgClick}/>
                 <h3>{meal.strMeal}</h3>
                 <span className="heart" onClick={handleLikeClick}>
-                    {liked ? (
+                    {isLiked ? (
                         <FontAwesomeIcon icon={faHeart} aria-hidden="true"/>
                     ) : (
                         <FontAwesomeIcon icon={faHeartOutline} aria-hidden="true"/>
@@ -38,7 +41,7 @@ const RecipeCard = ({meal, onImgClick, onLike, category, tags})=>{
                             {tag.trim()}
                         </div>
                 ))}
-                {meal.strArea}
+                <div className="tag">{meal.strArea}</div>
             </div>
         </div>
       );
